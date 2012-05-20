@@ -80,6 +80,13 @@ if __name__ == "__main__":
                     ["TEMPLATE_DIRS = (", "    os.path.join(os.path.dirname(__file__),'templates')"],
                 ]
             edit_file(file_name, replace_lines, add_before_lines, add_after_lines)
+            #activate admin in urls
+            file_name = os.path.join(project_directory, 'urls.py')
+            replace_lines = [
+                    ["# from django.contrib import admin", "from django.contrib import admin"],
+                    ["# admin.autodiscover()", "admin.autodiscover()"]
+                ]
+            edit_file(file_name, replace_lines)
             #message
             print(' * Your fairy-django-project has been created')
             print(' * To use any fairy feature run "python manage.py fairy"')

@@ -18,7 +18,6 @@ except ImportError:
 import settings
 
 def edit_file(file_name, replace_lines=[], add_before_lines=[], add_after_lines=[]):
-    print add_after_lines
     shutil.move(file_name, file_name+'~')
     dest = open(file_name, 'w')
     src = open(file_name+'~', 'r')    
@@ -98,7 +97,7 @@ def fairy_newModel(app_name = None, model_name = None):
     result += "    #filter_horizontal = ('any_field',)\n"  
     result += "    #raw_id_fields = ('foreign_key_field',)\n"
     result += "    pass\n\n"
-    result += "admin.site.register(%s, %s_admin)\n\n" %(model_name, model_name)
+    result += "admin.site.register(models.%s, %s_admin)\n\n" %(model_name, model_name)
     append_file("%s/admin.py" %(app_name), result)
     print(" * New model has been created : %s.models.%s" %(app_name, model_name))
     return app_name, model_name
@@ -114,7 +113,7 @@ def fairy_newView(app_name = None, view_name = None):
     result = ""
     result += "def %s(request):\n" % (view_name)
     result += "    data = {'message' : '%s.views.%s is active'}\n" %(app_name, view_name)
-    result += "    return render(request, 'template/%s/%s.html')\n\n" %(app_name, view_name) 
+    result += "    return render(request, '%s/%s.html', data)\n\n" %(app_name, view_name) 
     append_file("%s/views.py" %(app_name), result)
     #add new entry in urls.py
     add_after_lines = [
