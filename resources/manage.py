@@ -67,6 +67,12 @@ def fairy_startApp(app_name=None):
          "    url(r'^%s/', include('%s.urls'))," %(app_name, app_name)],
     ]
     edit_file('urls.py', add_after_lines=add_after_lines)
+    #installed apps
+    add_after_lines = [
+        ["INSTALLED_APPS = (", 
+         "     '%s'," %(app_name)],
+    ]
+    edit_file('settings.py', add_after_lines=add_after_lines)
     os.mkdir('templates/%s'%(app_name))
     print(" * New app has been created : %s" %(app_name))
     return app_name
