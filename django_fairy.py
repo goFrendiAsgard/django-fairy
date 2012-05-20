@@ -29,6 +29,15 @@ def edit_file(file_name, replace_lines=[], add_before_lines=[], add_after_lines=
     
     dest.close()
     src.close()
+    os.remove(file_name+'~')
+    
+def create_file(file_name, content=""):
+    f = open(file_name, 'w')
+    f.write(content)
+    f.close()
+
+def delete_file(file_name):
+    os.remove(file_name)
 
 if __name__ == "__main__":
     #call django-admin
@@ -42,13 +51,18 @@ if __name__ == "__main__":
             current_directory = os.path.dirname(__file__)
             resource_directory = os.path.join(current_directory,'resources')            
             #copy ./resources/fairmanage.py to project_directory
-            src = os.path.join(resource_directory, 'fairmanage.py')
-            dest = os.path.join(project_directory, 'fairmanage.py')
+            src = os.path.join(resource_directory, 'manage.py')
+            dest = os.path.join(project_directory, 'manage.py')
             shutil.copy(src, dest)
             #copy ./resources/templates to project_directory
             src = os.path.join(resource_directory, 'templates')
             dest = os.path.join(project_directory, 'templates')
+            shutil.copytree(src, dest)            
+            #copy ./resources/fairy-resources to project_directory
+            src = os.path.join(resource_directory, 'fairy_app')
+            dest = os.path.join(project_directory, 'fairy_app')
             shutil.copytree(src, dest)
+            create_file(os.path.join(dest, '__init__.py'), '')
             #copy ./resources/templates to project_directory
             src = os.path.join(resource_directory, 'media')
             dest = os.path.join(project_directory, 'media')
@@ -68,4 +82,4 @@ if __name__ == "__main__":
             edit_file(file_name, replace_lines, add_before_lines, add_after_lines)
             #message
             print(' * Your fairy-django-project has been created')
-            print(' * You can now enjoy fairy features by using fairmanage.py')
+            print(' * To use any fairy feature run "python manage.py fairy"')

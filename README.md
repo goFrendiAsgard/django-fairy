@@ -6,13 +6,12 @@ It will make template and static automatically.
 
 Usage
 -----
-Instead of performing django-admin.py startproject your_new_project, use
-django-fairy.py startproject your_new_project
+Run : "python django_fairy/django_fairy.py startproject your_new_project"
+In your_new_project, run : "python manage.py fairy"
 
-Instead of performing manage.py startapp your_new_app, use fairmanage.py startapp your_new_app
 
 TODO
 ----
-* When startapp performed, urls and admins should be added automatically
-* When startapp performed, global urls should include app url
+* When startapp performed, urls and admins should be added automatically (done)
+* When startapp performed, global urls should include app url (done)
 * Fairy app that include several function to avoid verbosity
