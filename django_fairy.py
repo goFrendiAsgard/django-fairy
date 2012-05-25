@@ -5,88 +5,27 @@ Created on May 19, 2012
 @author: gofrendi
 '''
 
-from django.core.management import execute_manager, execute_from_command_line
-import sys, os, shutil
+from django.core.management import execute_from_command_line
+import sys, os
 
-def edit_file(file_name, replace_lines=[], add_before_lines=[], add_after_lines=[]):
-    shutil.move(file_name, file_name+'~')
-    dest = open(file_name, 'w')
-    src = open(file_name+'~', 'r')    
-    
-    for line in src:
-        for add_before_line in add_before_lines:
-            if line == add_before_line[0]+'\n':
-                new_line = add_before_line[1]+'\n'
-                dest.write(new_line)
-        for replace_line in replace_lines:
-            if line == replace_line[0]+'\n':
-                line = replace_line[1]+'\n'
-        dest.write(line)
-        for add_after_line in add_after_lines:
-            if line == add_after_line[0]+'\n':
-                new_line = add_after_line[1]+'\n'
-                dest.write(new_line)
-    
-    dest.close()
-    src.close()
-    os.remove(file_name+'~')
-    
-def create_file(file_name, content=""):
-    f = open(file_name, 'w')
-    f.write(content)
-    f.close()
+FAIRY_DIR = os.path.dirname(__file__)
+TEMPLATE_DIR = os.path.join(FAIRY_DIR, 'template')
 
-def delete_file(file_name):
-    os.remove(file_name)
+def pre_startproject():
+    param = []
+    param.append(sys.argv[0])
+    param.append('startproject')
+    param.append('--template')
+    param.append(TEMPLATE_DIR)
+    param.append(sys.argv[2])
+    sys.argv = param
 
 if __name__ == "__main__":
-    #call django-admin
-    execute_from_command_line()    
-    #special action
-    if len(sys.argv)>=3:
-        if sys.argv[1] == 'startproject':
-            #prepare locations
-            project_name = sys.argv[2]
-            project_directory = os.path.join(os.getcwd(), project_name)
-            current_directory = os.path.dirname(__file__)
-            resource_directory = os.path.join(current_directory,'resources')            
-            #copy ./resources/fairmanage.py to project_directory
-            src = os.path.join(resource_directory, 'manage.py')
-            dest = os.path.join(project_directory, 'manage.py')
-            shutil.copy(src, dest)
-            #copy ./resources/templates to project_directory
-            src = os.path.join(resource_directory, 'templates')
-            dest = os.path.join(project_directory, 'templates')
-            shutil.copytree(src, dest)            
-            #copy ./resources/fairy-resources to project_directory
-            src = os.path.join(resource_directory, 'fairy_app')
-            dest = os.path.join(project_directory, 'fairy_app')
-            shutil.copytree(src, dest)
-            create_file(os.path.join(dest, '__init__.py'), '')
-            #copy ./resources/templates to project_directory
-            src = os.path.join(resource_directory, 'media')
-            dest = os.path.join(project_directory, 'media')
-            shutil.copytree(src, dest)            
-            #prepare_settings(project_directory)
-            file_name = os.path.join(project_directory, 'settings.py')
-            replace_lines = [
-                    ["STATIC_ROOT = ''", "STATIC_ROOT = os.path.join(os.path.dirname(__file__),'static')"],
-                    ["    # 'django.contrib.admin',", "    'django.contrib.admin',"]
-                ]
-            add_before_lines = [
-                    ["DEBUG = True", "import os"],
-                ]
-            add_after_lines = [
-                    ["TEMPLATE_DIRS = (", "    os.path.join(os.path.dirname(__file__),'templates')"],
-                ]
-            edit_file(file_name, replace_lines, add_before_lines, add_after_lines)
-            #activate admin in urls
-            file_name = os.path.join(project_directory, 'urls.py')
-            replace_lines = [
-                    ["# from django.contrib import admin", "from django.contrib import admin"],
-                    ["# admin.autodiscover()", "admin.autodiscover()"]
-                ]
-            edit_file(file_name, replace_lines)
-            #message
-            print(' * Your fairy-django-project has been created')
-            print(' * To use any fairy feature run "python manage.py fairy"')
+    pre_act = {
+        'fairy-startproject' : pre_startproject,
+    }
+        
+    first_param = sys.argv[1]    
+    if first_param in pre_act:
+        pre_act[first_param]()    
+    execute_from_command_line(sys.argv)
