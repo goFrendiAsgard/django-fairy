@@ -35,7 +35,7 @@ def post_startapp():
     app_name = sys.argv[4]
     urls_file = os.path.join(PROJECT_DIR, 'urls.py')
     urls_replaces = [
-       ['##[include_app_url]##', '##[include_app_url]##\n    url(r\'^%s/\', include(%s.urls)),' %(app_name, app_name)]
+       ['##[include_app_url]##', '##[include_app_url]##\n    url(r\'^%s/\', include(\'%s.urls\')),' %(app_name, app_name)]
     ]
     edit_file(urls_file, urls_replaces)    
     settings_file = os.path.join(PROJECT_DIR, 'settings.py')
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         'fairy-makeview' : act_makeview,
     }
     
-    first_param = sys.argv[1]    
+    first_param = sys.argv[1] if len(sys.argv)>1 else ""  
     if first_param in new_act:
         new_act[first_param]()
     else:

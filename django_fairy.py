@@ -25,7 +25,7 @@ if __name__ == "__main__":
         'fairy-startproject' : pre_startproject,
     }
         
-    first_param = sys.argv[1]    
+    first_param = sys.argv[1] if len(sys.argv)>1 else ""   
     if first_param in pre_act:
         pre_act[first_param]()    
     execute_from_command_line(sys.argv)

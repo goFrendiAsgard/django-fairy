@@ -3,8 +3,15 @@
     <head>
         <meta charset="utf-8">
         <title></title>
+        {% block head %}
+        <script type ="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
+        {% endblock %}
+        {% block extra_head %}
+        {% endblock %}
     </head>
     <body>
+        {% block content %}
         
+        {% endblock %}    
     </body>
 </html>
