@@ -4,7 +4,7 @@ from django.core.management import execute_from_command_line
 
 CURRENT_DIR = os.path.dirname(__file__)
 PROJECT_DIR = os.path.join(CURRENT_DIR, '{{ project_name }}')
-RESOURCE_DIR = os.path.join(CURRENT_DIR, 'fairy-resource')
+RESOURCE_DIR = os.path.join(PROJECT_DIR, 'fairy-resource')
 APP_TEMPLATE_DIR = os.path.join(RESOURCE_DIR, 'app_template')
 
 def edit_file(file_name, replaces=[]):
@@ -21,13 +21,16 @@ def edit_file(file_name, replaces=[]):
     src.close()
     os.remove(file_name+'~')
 
-def pre_startapp():    
+def pre_startapp(app_name = None):    
     param = []
     param.append(sys.argv[0])
     param.append('startapp')
     param.append('--template')
     param.append(APP_TEMPLATE_DIR)
-    param.append(sys.argv[2])
+    if app_name == None:
+        param.append(sys.argv[2])
+    else:
+        param.append(app_name)
     sys.argv = param    
 
 def post_startapp():
@@ -44,9 +47,11 @@ def post_startapp():
     ]
     edit_file(settings_file, settings_replaces)
 
-def act_makemodel():
-    app_name = sys.argv[2]
-    model_name = sys.argv[3]
+def act_makemodel(app_name = None, model_name = None):
+    if app_name == None:
+        app_name = sys.argv[2]
+    if model_name == None:
+        model_name = sys.argv[3]
     app_dir = os.path.join(CURRENT_DIR, app_name)
     if not os.path.exists(app_dir):
         raise('app %s doesn\'t exists' %(app_name))    
@@ -80,9 +85,11 @@ def act_makemodel():
     ]
     edit_file(admin_file, admin_replaces)
 
-def act_makeview():
-    app_name = sys.argv[2]
-    view_name = sys.argv[3]
+def act_makeview(app_name = None, view_name = None):
+    if app_name == None:
+        app_name = sys.argv[2]
+    if view_name == None:
+        view_name = sys.argv[3]
     app_dir = os.path.join(CURRENT_DIR, app_name)
     if not os.path.exists(app_dir):
         raise('app %s doesn\'t exists' %(app_name))
@@ -107,26 +114,71 @@ def act_makeview():
     ]
     edit_file(urls_file, urls_replaces)
 
+def act_shell():
+    commands = [
+        'Create App',
+        'Change Active App',
+        'Create View',
+        'Create Model'
+    ]
+    app_name = ""
+    # menu
+    print('django-fairy management shell')    
+    for i in xrange(len(commands)):
+        print('%d : %s' %(i+1, commands[i]))
+    print('%d : %s' %(len(commands)+1, 'Quit'))
+    
+    opt = 0
+    try:
+        opt = raw_input('please enter your option (%d-%d): ' %(1,len(commands)+1))
+        opt = int(opt)
+        if opt in xrange(len(commands)+1):
+            opt -=1
+            if opt == 0:
+                app_name = raw_input('please enter a new app name: ')
+                pre_startapp(app_name)
+                execute_from_command_line(sys.argv)
+                post_startapp()
+            elif opt == 1:
+                app_name = raw_input('please enter an app name: ')
+            elif opt == 2:
+                if app_name == "":
+                    app_name = raw_input('please enter an app name: ')
+                view_name = raw_input('please enter a new view name: ')
+                act_makeview(app_name, view_name)
+            elif opt == 3:
+                if app_name == "":
+                    app_name = raw_input('please enter an app name: ')
+                model_name = raw_input('please enter a new model name: ')
+                model_name.capitalize()
+                act_makemodel(app_name, model_name)
+            act_shell()
+        else:
+            print 'bye\n'
+    except:
+        act_shell()
+
 if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', '{{ project_name }}.settings')
 
-    pre_act = {
+    PRE_ACT = {
         'fairy-startapp' : pre_startapp,
     }    
-    post_act = {
+    POST_ACT = {
         'fairy-startapp' : post_startapp,
     }
-    new_act = {
+    NEW_ACT = {
         'fairy-makemodel' : act_makemodel,
         'fairy-makeview' : act_makeview,
+        'fairy-shell' : act_shell,
     }
     
     first_param = sys.argv[1] if len(sys.argv)>1 else ""  
-    if first_param in new_act:
-        new_act[first_param]()
+    if first_param in NEW_ACT:
+        NEW_ACT[first_param]()
     else:
-        if first_param in pre_act:
-            pre_act[first_param]()        
+        if first_param in PRE_ACT:
+            PRE_ACT[first_param]()        
         execute_from_command_line(sys.argv)    
-        if first_param in post_act:
-            post_act[first_param]()
+        if first_param in POST_ACT:
+            POST_ACT[first_param]()

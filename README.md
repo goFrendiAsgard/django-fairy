@@ -11,10 +11,14 @@ Usage
 -----
 To make a new project : 
 * python django_fairy/django_fairy.py fairy-startproject your_new_project
+
 To make a new app, model and view respectively :
 * python manage.py fairy-startapp your_app_name
 * python manage.py fairy-makemodel your_app_name your_model_name
 * python manage.py fairy-makeview your_app_name your_model_name
+
+To use interactive mode:
+* python manage.py fairy-shell
 
 Django-fairy was created to make your life easier, not take the freedom from you.
 Anytime you think, you need the default django behavior, you can use any regular command as usual.

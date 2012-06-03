@@ -21,11 +21,11 @@ def pre_startproject():
     sys.argv = param
 
 if __name__ == "__main__":
-    pre_act = {
+    PRE_ACT = {
         'fairy-startproject' : pre_startproject,
     }
         
     first_param = sys.argv[1] if len(sys.argv)>1 else ""   
-    if first_param in pre_act:
-        pre_act[first_param]()    
+    if first_param in PRE_ACT:
+        PRE_ACT[first_param]()    
     execute_from_command_line(sys.argv)
